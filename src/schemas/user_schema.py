@@ -3,10 +3,8 @@ from datetime import datetime
 from typing import Optional
 from enum import Enum
 
-try:
-    from pydantic import EmailStr
-except ImportError:
-    EmailStr = str
+# Fallback for EmailStr to avoid dependency issues
+EmailStr = str
 
 
 class UserRole(str, Enum):
