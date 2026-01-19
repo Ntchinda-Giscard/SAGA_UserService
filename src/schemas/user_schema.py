@@ -1,7 +1,11 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 from datetime import datetime
 from typing import Optional
 from enum import Enum
+
+# Fallback for EmailStr to avoid dependency issues
+EmailStr = str
+
 
 class UserRole(str, Enum):
     ADMIN = "admin"
