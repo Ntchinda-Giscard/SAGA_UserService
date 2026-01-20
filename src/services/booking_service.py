@@ -8,9 +8,14 @@ class BookingService:
         self.db = db
 
     def create_booking(self, user_id: int, booking_data: BookingCreate):
-        # In a real microservice architecture, we would verify route_id with Catalogue Service here.
-        # For now, we assume route_id is valid.
+        # Verify route_id with Catalogue Service
+        from ..clients.catalogue_client import CatalogueClient
+        catalogue_client = CatalogueClient()
+        route = catalogue_client.get_route(booking_data.route_id)
         
+        if not route:
+             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Route ID")
+
         new_booking = Booking(
             user_id=user_id,
             route_id=booking_data.route_id,
@@ -21,6 +26,14 @@ class BookingService:
         self.db.commit()
         self.db.refresh(new_booking)
         return new_booking
+
+    def update_booking_status(self, booking_id: int, status: str):
+        booking = self.db.query(Booking).filter(Booking.id == booking_id).first()
+        if booking:
+            booking.status = status
+            self.db.commit()
+            self.db.refresh(booking)
+        return booking
 
     def get_user_bookings(self, user_id: int):
         return self.db.query(Booking).filter(Booking.user_id == user_id).all()

@@ -1,4 +1,4 @@
-name: Catalogue Service CI/CD
+name: User Service CI/CD
 
 on:
   push:
@@ -83,4 +83,3 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-          

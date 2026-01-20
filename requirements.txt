@@ -4,3 +4,4 @@ sqlalchemy>=2.0.45
 uvicorn[standard]
 passlib[bcrypt]
 pydantic[email]
+python-jose[cryptography]
