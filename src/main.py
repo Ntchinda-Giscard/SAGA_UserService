@@ -17,3 +17,5 @@ app.include_router(booking_routes.router)
 @app.get("/health")
 def health_check():
     return {"status": "healthy", "service": "UserService"}
+
+

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from ..database.session import get_db
 from ..services.user_service import UserService
-from ..schemas.user_schema import UserCreate, UserResponse, UserLogin
+from ..schemas.user_schema import UserCreate, UserResponse, UserLogin, Token
 
 router = APIRouter(
     prefix="/users",
@@ -22,7 +22,7 @@ def register_user(
     """
     return service.create_user(user_data)
 
-@router.post("/login")
+@router.post("/login", response_model=Token)
 def login(
     login_data: UserLogin,
     service: UserService = Depends(get_user_service)
@@ -37,5 +37,19 @@ def login(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    # in a real app, return JWT token here
-    return {"message": "Login successful", "user_id": user.id, "role": user.role}
+    
+    from ..auth import create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+    from datetime import timedelta
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.email, "id": user.id, "role": user.role}, 
+        expires_delta=access_token_expires
+    )
+    
+    return {
+        "access_token": access_token, 
+        "token_type": "bearer",
+        "user_id": user.id,
+        "role": user.role
+    }

@@ -41,3 +41,23 @@ def get_my_bookings(
     Get all bookings for the authenticated user.
     """
     return service.get_user_bookings(user_id)
+
+@router.get("/{booking_id}", response_model=BookingResponse)
+def get_booking(
+    booking_id: int,
+    service: BookingService = Depends(get_booking_service),
+    # In a real scenario, this should be admin-only or securely scoped
+):
+    return service.db.query(Booking).filter(Booking.id == booking_id).first()
+
+@router.patch("/{booking_id}/status", response_model=BookingResponse)
+def update_booking_status(
+    booking_id: int,
+    status: str,
+    service: BookingService = Depends(get_booking_service),
+    # internal service call protection needed here in production
+):
+    booking = service.update_booking_status(booking_id, status)
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    return booking
