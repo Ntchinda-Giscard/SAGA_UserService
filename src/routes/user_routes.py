@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from ..database.session import get_db
 from ..services.user_service import UserService
 from ..schemas.user_schema import UserCreate, UserResponse, UserLogin, Token
+from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(
     prefix="/users",
@@ -24,13 +25,13 @@ def register_user(
 
 @router.post("/login", response_model=Token)
 def login(
-    login_data: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     service: UserService = Depends(get_user_service)
 ):
     """
     Authenticate a user.
     """
-    user = service.authenticate_user(login_data.email, login_data.password)
+    user = service.authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
