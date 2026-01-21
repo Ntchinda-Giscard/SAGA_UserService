@@ -1,15 +1,16 @@
 name: User Service CI/CD
 
+# Trigger the workflow on push and pull request events
 on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'SAGA_UserService/**'
+      - UserService/**
       - '.github/workflows/userservice-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - 'UserService/**'
+      - UserService/**
   workflow_dispatch:
 
 env:
