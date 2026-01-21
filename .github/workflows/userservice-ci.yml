@@ -6,12 +6,12 @@ on:
     branches: [ main, develop ]
     tags: [ 'v*' ]
     paths:
-      - UserService/**
+      - '**'
       - '.github/workflows/userservice-ci.yml'
   pull_request:
     branches: [ main ]
     paths:
-      - UserService/**
+      - '**'
   workflow_dispatch:
 
 env:
@@ -37,19 +37,16 @@ jobs:
           enable-cache: false
 
       - name: Install dependencies
-        working-directory: ./UserService
         run: |
           uv pip install -r requirements.txt
 
       - name: Run linting
-        working-directory: ./UserService
         run: |
           # Add linting commands here
           # uv run ruff check .
           echo "Linting would run here"
 
       - name: Run tests
-        working-directory: ./UserService
         run: |
           # Add test commands here
           # uv run pytest tests/ -v
@@ -79,7 +76,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./UserService
+          context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
