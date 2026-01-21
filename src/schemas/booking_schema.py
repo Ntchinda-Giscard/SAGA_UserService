@@ -1,6 +1,10 @@
-from pydantic import BaseModel
 from datetime import datetime
-from .user_schema import BookingStatus
+from enum import Enum
+
+class BookingStatus(str, Enum):
+    PENDING = "pending"
+    CONFIRMED = "confirmed"
+    CANCELLED = "cancelled"
 
 class BookingBase(BaseModel):
     route_id: int
